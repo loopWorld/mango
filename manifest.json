@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "mango",
+  "version": "1.0",
+  "description": "mango插件",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "browsingData"
+  ],
+  "background": {
+    "service_worker": "./background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "stitch.png",
+      "48": "stitch.png",
+      "128": "stitch.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://agentseller.temu.com/govern/information-supplementation"],
+      "js": ["main.js"]
+    }
+  ]
+}
