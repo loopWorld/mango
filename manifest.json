@@ -21,8 +21,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://agentseller.temu.com/govern/information-supplementation"],
+      "matches": ["*://*/*"],
       "js": ["main.js"]
+    },
+    {
+      "matches": ["https://agentseller.temu.com/govern/information-supplementation"],
+      "js": ["./js/Compliance_center.js"]
     }
   ]
 }
