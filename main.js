@@ -10,10 +10,5 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    document.addEventListener('keyup', e => {
-        let { key } = e
-        if (key == 'Delete') {
-            
-        }
-    })
+    
 })();
