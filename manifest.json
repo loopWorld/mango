@@ -27,6 +27,10 @@
     {
       "matches": ["https://agentseller.temu.com/govern/information-supplementation"],
       "js": ["./js/Compliance_center.js"]
+    },
+    {
+      "matches": ["https://trade.1688.com/*"],
+      "js": ["./js/purchase_details.js"]
     }
   ]
 }

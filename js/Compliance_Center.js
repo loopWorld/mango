@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         New Userscript
-// @namespace    http://tampermonkey.net/
+// @namespace    https://agentseller.temu.com/govern/information-supplementation
 // @version      2024-10-31
 // @description  try to take over the world!
 // @author       You
@@ -59,6 +59,12 @@
                     type: 'search',
                     select: 4,
                     doc: document.getElementById("35_1000100087") || null
+                },
+                {
+                    title: '产品构成/组件',
+                    type: 'search',
+                    select: 3,
+                    doc: document.getElementById("37_1000100105") || null
                 },
                 {
                     title: '使用方法和操作注意事项',
