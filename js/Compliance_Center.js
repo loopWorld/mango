@@ -119,7 +119,7 @@
                 {
                     title: '制造商信息',
                     type: 'search',
-                    select: 1,
+                    select: 2,
                     doc: document.getElementById("60_repIdList") || null
                 },
                 {
