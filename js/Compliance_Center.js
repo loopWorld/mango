@@ -98,30 +98,30 @@
 
         function arrfn() {
             arr = [
-                {
-                    title: '警示类型',
-                    type: 'search',
-                    select: 1,
-                    doc: document.getElementById("4_1000000001") || null
-                },
-                {
-                    title: '欧盟负责人',
-                    type: 'search',
-                    select: 1,
-                    doc: document.getElementById("25_repIdList") || null
-                },
+                // {
+                //     title: '警示类型',
+                //     type: 'search',
+                //     select: 1,
+                //     doc: document.getElementById("4_1000000001") || null
+                // },
+                // {
+                //     title: '欧盟负责人',
+                //     type: 'search',
+                //     select: 1,
+                //     doc: document.getElementById("25_repIdList") || null
+                // },
                 {
                     title: '是否含电池',
                     type: 'radio',
                     select: 1,
                     doc: document.querySelectorAll("input.rocket-radio-input")
                 },
-                {
-                    title: '制造商信息',
-                    type: 'search',
-                    select: 1,
-                    doc: document.getElementById("60_repIdList") || null
-                },
+                // {
+                //     title: '制造商信息',
+                //     type: 'search',
+                //     select: 1,
+                //     doc: document.getElementById("60_repIdList") || null
+                // },
                 {
                     title: '制造商',
                     type: 'search',
@@ -146,6 +146,12 @@
                     select: 3,
                     doc: document.getElementById("37_1000100105") || null
                 },
+                {
+                    title: '根据进口食品安全管理特别法进行的进口申报',
+                    type: 'search',
+                    select: 2,
+                    doc: document.getElementById("48_1000100119") || null
+                },  
                 {
                     title: '使用方法和操作注意事项',
                     type: 'search',

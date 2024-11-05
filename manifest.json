@@ -31,6 +31,10 @@
     {
       "matches": ["https://trade.1688.com/*"],
       "js": ["./js/purchase_details.js"]
+    },
+    {
+      "matches": ["https://seller.kuajingmaihuo.com/main/order-manager/shipping-list"],
+      "js": ["./js/autoPrint.js"]
     }
   ]
 }
