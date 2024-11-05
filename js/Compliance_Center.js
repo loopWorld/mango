@@ -104,24 +104,24 @@
                 //     select: 1,
                 //     doc: document.getElementById("4_1000000001") || null
                 // },
-                // {
-                //     title: '欧盟负责人',
-                //     type: 'search',
-                //     select: 1,
-                //     doc: document.getElementById("25_repIdList") || null
-                // },
+                {
+                    title: '欧盟负责人',
+                    type: 'search',
+                    select: 1,
+                    doc: document.getElementById("25_repIdList") || null
+                },
                 {
                     title: '是否含电池',
                     type: 'radio',
                     select: 1,
                     doc: document.querySelectorAll("input.rocket-radio-input")
                 },
-                // {
-                //     title: '制造商信息',
-                //     type: 'search',
-                //     select: 1,
-                //     doc: document.getElementById("60_repIdList") || null
-                // },
+                {
+                    title: '制造商信息',
+                    type: 'search',
+                    select: 1,
+                    doc: document.getElementById("60_repIdList") || null
+                },
                 {
                     title: '制造商',
                     type: 'search',
