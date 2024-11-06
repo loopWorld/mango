@@ -98,12 +98,12 @@
 
         function arrfn() {
             arr = [
-                // {
-                //     title: '警示类型',
-                //     type: 'search',
-                //     select: 1,
-                //     doc: document.getElementById("4_1000000001") || null
-                // },
+                {
+                    title: '警示类型',
+                    type: 'search',
+                    select: 1,
+                    doc: document.getElementById("4_1000000001") || null
+                },
                 {
                     title: '欧盟负责人',
                     type: 'search',
