@@ -1,26 +1,31 @@
-chrome.runtime.onInstalled.addListener(() => {
-  // 插件安装时的初始化操作
-  console.log('插件已安装')
-});
-
-chrome.runtime.onStartup.addListener(() => {
-  // 浏览器启动时的初始化操作
-  console.log('浏览器已启动')
-});
-
-// // 发送消息到内容脚本或其他部分
-// chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-//   const tabId = tabs[0].id;
-//   chrome.tabs.sendMessage(tabId, { message: 'Hello from background.js' });
-// });
-
-// // 接收来自内容脚本或其他部分的消息
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.type === 'getData') {
-//     const data = { key: 'value' }; // 示例数据
-//     sendResponse(data); 
-//   }
-// });
-
-// END: gl4e5c3xef45
-
+chrome.webRequest.onHeadersReceived.addListener(
+  async (details) => {
+    if (details.url.includes('https://seller.kuajingmaihuo.com/bg/quiet/api/mms/login')) {
+      const cookieHeader = details.responseHeaders.find(
+        header => header.name.toLowerCase() === 'set-cookie'
+      );
+      
+      if (cookieHeader) {
+        // 提取SUB_PASS_ID
+        const subPassId = cookieHeader.value.match(/SUB_PASS_ID=([^;]+)/)?.[1];
+        if (subPassId) {
+          await chrome.storage.local.set({ 'SUB_PASS_ID': subPassId });
+          console.log('SUB_PASS_ID已存储:', subPassId);
+          
+          // 发送给content scripts（可选）
+          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]?.id) {
+              chrome.tabs.sendMessage(tabs[0].id, { 
+                type: 'COOKIE_UPDATE',
+                SUB_PASS_ID: subPassId 
+              });
+            }
+          });
+        }
+      }
+    }
+    return { responseHeaders: details.responseHeaders };
+  },
+  { urls: ["https://seller.kuajingmaihuo.com/*"] },
+  ["responseHeaders", "extraHeaders"]
+);

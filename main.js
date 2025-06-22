@@ -10,5 +10,10 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    
+    // 在任何content script或popup.js中
+    // chrome.storage.local.get('SUB_PASS_ID', (result) => {
+    //     console.log('获取到的SUB_PASS_ID:', result.SUB_PASS_ID);
+    //     // 使用SUB_PASS_ID...
+    // });
+
 })();

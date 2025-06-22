@@ -6,10 +6,17 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "browsingData"
+    "browsingData",
+    "downloads",
+    "webRequest",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://seller.kuajingmaihuo.com/*"
   ],
   "background": {
-    "service_worker": "./background.js"
+    "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html",
@@ -22,7 +29,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["main.js"]
+      "js": ["main.js", "./js/jquery-3.7.1.min.js"]
     },
     {
       "matches": ["https://agentseller.temu.com/govern/information-supplementation"],
@@ -35,6 +42,47 @@
     {
       "matches": ["https://seller.kuajingmaihuo.com/main/order-manager/shipping-list"],
       "js": ["./js/autoPrint.js"]
+    },
+    {
+      "matches": ["https://seller.kuajingmaihuo.com/main/product/label"],
+      "js": ["./js/productTM.js"]
+    },
+    {
+      "matches": ["https://www.temu.com/*dianxiaomi"],
+      "js": ["./js/temuScroll.js"]
+    },
+    {
+      "matches": ["https://seller.kuajingmaihuo.com/goods/product/list"],
+      "js": ["./js/liangjianhong.js"]
+    },
+    {
+      "matches": ["https://agentseller.temu.com/govern/upload-qualifications"],
+      "js": ["./js/cpc.js"]
+    },
+    {
+      "matches": ["https://agentseller.temu.com/govern/compliant-live-photos"],
+      "js": ["./js/shipai.js"]
+    },
+    {
+      "matches": ["https://www.dianxiaomi.com/pddkjProduct/edit.htm*"],
+      "js": ["./js/fuzhuang.js"]
+    },
+    {
+      "matches": ["https://seller.kuajingmaihuo.com/main/price-manage/price-adjustment*"],
+      "js": ["./js/tiaojia.js"]
+    },
+    {
+      "matches": ["https://seller.kuajingmaihuo.com/*"],
+      "js": ["./js/closePopWindow.js"]
     }
-  ]
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["img/shipai.jpg"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
 }

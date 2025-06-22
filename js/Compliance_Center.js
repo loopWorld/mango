@@ -1,194 +1,200 @@
 // ==UserScript==
-// @name         New Userscript
+// @name         Compliance Center Automation
 // @namespace    https://agentseller.temu.com/govern/information-supplementation
 // @version      2024-10-31
-// @description  try to take over the world!
-// @author       You
+// @description  Automates form filling and interactions on the compliance center.
+// @author       YeHao
 // @match        https://github.com/loopWorld/mango
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=github.com
 // @grant        none
 // ==/UserScript==
+
 (function () {
     'use strict';
-    document.addEventListener('keyup', e => {
-        let { key } = e, arr;
-        if (key == 'Delete') {
-            if (!localStorage.getItem('Identification_code')) {
-                let code = prompt('请输入识别码')
-                localStorage.setItem('Identification_code', code)
-            }
-            arrfn()
-            for (let item of arr) fn(item)
+
+    // 监听键盘按键事件
+    document.addEventListener('keyup', (event) => {
+        const { key } = event;
+
+        if (key === 'Delete') {
+            handleDeleteKey();
+        } else if (key === 'Enter') {
+            handleEnterKey();
         }
-        if (key == 'Enter') {
-            if (!localStorage.getItem('Identification_code')) {
-                let code = prompt('请输入识别码')
-                localStorage.setItem('Identification_code', code)
+    });
+
+    /**
+     * 处理 "Delete" 键按下事件
+     */
+    function handleDeleteKey() {
+        ensureIdentificationCode();
+        const tasks = getTasks();
+        executeTasks(tasks);
+    }
+
+    /**
+     * 处理 "Enter" 键按下事件
+     */
+    function handleEnterKey() {
+        ensureIdentificationCode();
+        executeMainProcess();
+    }
+
+    /**
+     * 确保识别码已存储在 localStorage 中
+     */
+    function ensureIdentificationCode() {
+        if (!localStorage.getItem('Identification_code')) {
+            const code = prompt('请输入识别码');
+            if (code) {
+                localStorage.setItem('Identification_code', code);
+            } else {
+                console.error('识别码未输入，操作中止。');
             }
-            fn1();
         }
-        /**
-         * 模拟按键事件
-         * @param {Document} doc - 文档对象
-         * @param {number} keyCode - 要模拟的按键的键码
-         * @returns {void} - 无返回值
-         */
-        function simulateKeyPress(doc, keyCode) {
-            const event = new KeyboardEvent('keydown', {
-                keyCode: keyCode,
-                code: keyCode,
-                key: keyCode,
-                which: keyCode,
-                bubbles: true,
-                cancelable: true,
-            });
-            doc.dispatchEvent(event);
+    }
+
+    /**
+     * 模拟按键事件
+     * @param {HTMLElement} element - 目标元素
+     * @param {number} keyCode - 要模拟的按键代码
+     */
+    function simulateKeyPress(element, keyCode) {
+        const event = new KeyboardEvent('keydown', {
+            keyCode,
+            code: keyCode,
+            key: keyCode,
+            which: keyCode,
+            bubbles: true,
+            cancelable: true,
+        });
+        element.dispatchEvent(event);
+    }
+
+    /**
+     * 根据任务类型执行单个任务
+     * @param {Object} task - 任务对象
+     */
+    async function executeTask(task) {
+        const { title, type, select, element } = task;
+
+        if (!element) {
+            console.warn(`任务 "${title}" 的目标元素未找到，跳过此任务。`);
+            return;
         }
 
-        /**
-         * 延迟指定的毫秒数
-         * @param {number} ms - 要延迟的毫秒数
-         * @returns {Promise} - 一个 Promise，它会在指定的毫秒数后 resolve
-         */
-        async function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        try {
+            switch (type) {
+                case 'search':
+                    await handleSearchTask(element, select, title);
+                    break;
+                case 'radio':
+                    element[select]?.click();
+                    break;
+                case 'text':
+                    element.focus();
+                    document.execCommand('insertText', false, select);
+                    break;
+                case 'span':
+                    element.click();
+                    break;
+                default:
+                    console.warn(`未知的任务类型 "${type}"，跳过此任务。`);
+            }
+        } catch (error) {
+            console.error(`执行任务 "${title}" 时出错:`, error);
+        }
+    }
+
+    /**
+     * 处理 "search" 类型的任务
+     * @param {HTMLElement} element - 目标元素
+     * @param {number} select - 按下方向键的次数
+     * @param {string} title - 任务标题
+     */
+    async function handleSearchTask(element, select, title) {
+        if (title === '警示类型' || title === '欧盟负责人' || title === '制造商信息' || title === '土耳其负责人') {
+            const overflowItems = element.parentNode.parentNode.parentNode.querySelectorAll('.rocket-select-selection-overflow-item');
+            if (overflowItems.length > 1) return;
         }
 
-        function fn(item) {
-            let { title, type, select, doc } = item;
-            if (!doc || doc.length == 0) return;
-            if (type === 'search') {
-                doc.focus();
-                // 键盘循环模拟按下向下键                           
-                for (let i = 0; i < select; i++)simulateKeyPress(doc, 40);
-                // 键盘模拟按下回车键
-                simulateKeyPress(doc, 13);
-                return
-            }
-            if (type === 'radio') {
-                doc[select].click();
-                return
-            }
-            if (type == 'text') {
-                doc.focus();
-                document.execCommand('insertText', false, select);
-                return
-            }
-            if( type == 'span') {
-                doc.click();
-                return
-            }
+        const selectedItems = element.parentNode.parentNode.querySelectorAll('.rocket-select-selection-item');
+        if (selectedItems.length !== 0) return;
+
+        element.focus();
+        for (let i = 0; i < select; i++) {
+            simulateKeyPress(element, 40); // 下方向键
         }
-        function fn1() {
-            document.querySelectorAll('.rocket-btn.rocket-btn-link.rocket-btn-sm')[0].click()
-            setTimeout(() => {
-                arrfn();
-                for (let item of arr) fn(item);
+        simulateKeyPress(element, 13); // 回车键
+    }
+
+    /**
+     * 执行任务列表中的所有任务
+     * @param {Array} tasks - 任务列表
+     */
+    async function executeTasks(tasks) {
+        for (const task of tasks) {
+            await executeTask(task);
+        }
+    }
+
+    /**
+     * 执行由 "Enter" 键触发的主流程
+     */
+    function executeMainProcess() {
+        const firstButton = document.querySelector('.rocket-btn.rocket-btn-link.rocket-btn-sm');
+        if (!firstButton) {
+            console.error('未找到主按钮，操作中止。');
+            return;
+        }
+
+        firstButton.click();
+        setTimeout(async () => {
+            const tasks = getTasks();
+            await executeTasks(tasks);
+
+            const confirmButton = document.querySelectorAll('.rocket-btn-primary')[1];
+            if (confirmButton) {
+                confirmButton.click();
                 setTimeout(() => {
-                    document.querySelectorAll('.rocket-btn-primary')[1].click()
-                    setTimeout(() => {
-                        document.querySelector("#agentseller-layout-content > div > div > div > form > div > div.rocket-space.rocket-space-horizontal.rocket-space-align-start > div:nth-child(1) > button")
-                        setTimeout(() => {
-                            fn1()
-                        },1500)
-                    },800)
-                },500)
-            }, 4000)
-        }
+                    const nextButton = document.querySelector("#agentseller-layout-content > div > div > div > form > div > div.rocket-space.rocket-space-horizontal.rocket-space-align-start > div:nth-child(1) > button");
+                    if (nextButton) {
+                        nextButton.click();
+                        setTimeout(executeMainProcess, 3500);
+                    }
+                }, 800);
+            }
+        }, 4000);
+    }
 
-        function arrfn() {
-            arr = [
-                {
-                    title: '警示类型',
-                    type: 'search',
-                    select: 1,
-                    doc: document.getElementById("4_1000000001") || null
-                },
-                {
-                    title: '欧盟负责人',
-                    type: 'search',
-                    select: 1,
-                    doc: document.getElementById("25_repIdList") || null
-                },
-                {
-                    title: '是否含电池',
-                    type: 'radio',
-                    select: 1,
-                    doc: document.querySelectorAll("input.rocket-radio-input")
-                },
-                {
-                    title: '制造商信息',
-                    type: 'search',
-                    select: 2,
-                    doc: document.getElementById("60_repIdList") || null
-                },
-                {
-                    title: '制造商',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("33_1000100091") || null
-                },
-                {
-                    title: '制造日期/保质期',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("34_1000100092") || null
-                },
-                {
-                    title: '品质保证标准',
-                    type: 'search',
-                    select: 4,
-                    doc: document.getElementById("35_1000100087") || null
-                },
-                {
-                    title: '产品构成/组件',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("37_1000100105") || null
-                },
-                {
-                    title: '根据进口食品安全管理特别法进行的进口申报',
-                    type: 'search',
-                    select: 2,
-                    doc: document.getElementById("48_1000100119") || null
-                },  
-                {
-                    title: '使用方法和操作注意事项',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("41_1000100109") || null
-                },
-                {
-                    title: '型号',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("49_1000100120") || null
-                },
-                {
-                    title: '补充认证信息',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("50_1000100090") || null
-                },
-                {
-                    title: '警告或安全信息（补充）',
-                    type: 'search',
-                    select: 3,
-                    doc: document.getElementById("42_1000100110") || null
-                },
-                {
-                    title: '删除识别码',
-                    type: 'span',
-                    select: 0,
-                    doc: document.querySelector(".rocket-input-suffix > i") || null
-                },
-                {
-                    title: '商品识别码',
-                    type: 'text',
-                    select: localStorage.getItem('Identification_code'),
-                    doc: document.getElementById("611100100115List_0_name") || null
-                }
-            ];
-        }
-    })
+    /**
+     * 返回要执行的任务列表
+     * @returns {Array} 任务列表
+     */
+    function getTasks() {
+        return [
+            { title: '警示类型', type: 'search', select: 9, element: document.getElementById("4_1000000001") },
+            { title: '欧盟负责人', type: 'search', select: 1, element: document.getElementById("25_repIdList") },
+            { title: '是否含电池', type: 'radio', select: 1, element: document.querySelectorAll("input.rocket-radio-input") },
+            { title: '制造商信息', type: 'search', select: 3, element: document.getElementById("60_repIdList") },
+            { title: '土耳其负责人', type: 'search', select: 1, element: document.getElementById("84_repIdList") },
+            { title: '生产日期', type: 'text', select: '2024/09/23', element: document.getElementById("122_1100100316") },
+            // { title: '本证书所涵盖产品的标识特征', type: 'text', select: 'Labeled Age Grading: 0-12Y;Product Description: Clothes;Style No./Item No: YJK0001,YJK0002,YJK0003,YJK0004,YJK0005,YJK0006, YJK0007,YJK0008,YJK0009,YJK0010,YJKO011,YJK0012, YJK0013,YJK0014,YJK0015,YJK0016,YJK0017,YJK0018, YJK0019,YJK0020', element: document.getElementById("122_1100100275") },
+            { title: '维护检测结果记录的个人联系方式-姓名', type: 'text', select: 'Pputianshichengxiangqurelangzhiyichang', element: document.getElementById("122_1100100277") },
+            { title: '生产日期', type: 'text', select: '2024/09/23', element: document.getElementById("121_1100100315") },
+            // { title: '维护检测结果记录的个人联系方式-姓名', type: 'text', select: 'GaoWei', element: document.getElementById("121_1100100265") },
+            { title: '制造商', type: 'search', select: 2, element: document.getElementById("33_1000100091") },
+            { title: '制造日期/保质期', type: 'search', select: 2, element: document.getElementById("34_1000100092") },
+            { title: '品质保证标准', type: 'search', select: 2, element: document.getElementById("35_1000100087") },
+            { title: '产品构成/组件', type: 'search', select: 2, element: document.getElementById("37_1000100105") },
+            { title: '根据进口食品安全管理特别法进行的进口申报', type: 'search', select: 1, element: document.getElementById("48_1000100119") },
+            { title: '使用方法和操作注意事项', type: 'search', select: 2, element: document.getElementById("41_1000100109") },
+            { title: '型号', type: 'search', select: 2, element: document.getElementById("49_1000100120") },
+            { title: '补充认证信息', type: 'search', select: 3, element: document.getElementById("50_1000100090") },
+            { title: '警告或安全信息（补充）', type: 'search', select: 2, element: document.getElementById("42_1000100110") },
+            { title: '认证信息', type: 'search', select: 1, element: document.getElementById("50_1000100123") },
+            { title: '删除识别码', type: 'span', select: 0, element: document.querySelector(".rocket-input-suffix > i") },
+            { title: '商品识别码', type: 'text', select: localStorage.getItem('Identification_code'), element: document.getElementById("611100100115List_0_name") },
+        ];
+    }
 })();
