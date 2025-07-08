@@ -9,11 +9,15 @@
     "browsingData",
     "downloads",
     "webRequest",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
     "storage",
-    "tabs"
+    "tabs",
+    "cookies"
   ],
   "host_permissions": [
-    "https://seller.kuajingmaihuo.com/*"
+    "https://seller.kuajingmaihuo.com/*",
+    "*://*/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -29,56 +33,41 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["main.js", "./js/jquery-3.7.1.min.js"]
+      "js": ["main.js", "./js/jquery-3.7.1.min.js"],
+      "run_at": "document_start"
     },
     {
       "matches": ["https://agentseller.temu.com/govern/information-supplementation"],
       "js": ["./js/Compliance_center.js"]
     },
     {
-      "matches": ["https://trade.1688.com/*"],
-      "js": ["./js/purchase_details.js"]
-    },
-    {
-      "matches": ["https://seller.kuajingmaihuo.com/main/order-manager/shipping-list"],
-      "js": ["./js/autoPrint.js"]
-    },
-    {
-      "matches": ["https://seller.kuajingmaihuo.com/main/product/label"],
-      "js": ["./js/productTM.js"]
-    },
-    {
-      "matches": ["https://www.temu.com/*dianxiaomi"],
-      "js": ["./js/temuScroll.js"]
-    },
-    {
       "matches": ["https://seller.kuajingmaihuo.com/goods/product/list"],
       "js": ["./js/liangjianhong.js"]
-    },
-    {
-      "matches": ["https://agentseller.temu.com/govern/upload-qualifications"],
-      "js": ["./js/cpc.js"]
     },
     {
       "matches": ["https://agentseller.temu.com/govern/compliant-live-photos"],
       "js": ["./js/shipai.js"]
     },
     {
-      "matches": ["https://www.dianxiaomi.com/pddkjProduct/edit.htm*"],
+      "matches": ["https://www.dianxiaomi.com/*"],
       "js": ["./js/fuzhuang.js"]
     },
     {
-      "matches": ["https://seller.kuajingmaihuo.com/main/price-manage/price-adjustment*"],
+      "matches": ["https://agentseller.temu.com/main/adjust-price-manage/order-price*"],
       "js": ["./js/tiaojia.js"]
     },
     {
-      "matches": ["https://seller.kuajingmaihuo.com/*"],
+      "matches": ["https://seller.kuajingmaihuo.com/*","https://agentseller.temu.com/*"],
       "js": ["./js/closePopWindow.js"]
+    },
+    {
+      "matches": ["https://seller.kuajingmaihuo.com/goods/product/list*"],
+      "js": ["./js/baozhuang.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["img/shipai.jpg"],
+      "resources": ["img/shipai.jpeg"],
       "matches": ["<all_urls>"]
     }
   ],

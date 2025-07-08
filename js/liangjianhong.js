@@ -2,6 +2,7 @@
 (async () => {
     "use strict"
     document.addEventListener('keyup', e => {
+        return
         let { key } = e, arr;
         if (key == 'Delete') {
             fn()

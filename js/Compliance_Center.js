@@ -79,7 +79,7 @@
         const { title, type, select, element } = task;
 
         if (!element) {
-            console.warn(`任务 "${title}" 的目标元素未找到，跳过此任务。`);
+            console.log(`任务 "${title}" 的目标元素未找到，跳过此任务。`);
             return;
         }
 
@@ -178,11 +178,13 @@
             { title: '是否含电池', type: 'radio', select: 1, element: document.querySelectorAll("input.rocket-radio-input") },
             { title: '制造商信息', type: 'search', select: 3, element: document.getElementById("60_repIdList") },
             { title: '土耳其负责人', type: 'search', select: 1, element: document.getElementById("84_repIdList") },
-            { title: '生产日期', type: 'text', select: '2024/09/23', element: document.getElementById("122_1100100316") },
-            // { title: '本证书所涵盖产品的标识特征', type: 'text', select: 'Labeled Age Grading: 0-12Y;Product Description: Clothes;Style No./Item No: YJK0001,YJK0002,YJK0003,YJK0004,YJK0005,YJK0006, YJK0007,YJK0008,YJK0009,YJK0010,YJKO011,YJK0012, YJK0013,YJK0014,YJK0015,YJK0016,YJK0017,YJK0018, YJK0019,YJK0020', element: document.getElementById("122_1100100275") },
+            { title: '材质分类', type: 'search', select: 1, element: document.getElementById("166List_0_list_0_1100100460") },
+            { title: '材质名称', type: 'search', select: 1, element: document.getElementById("166List_0_list_0_1100100461") },
+            { title: '是否含一次性塑料', type: 'search', select: 2, element: document.getElementById("166List_0_list_0_1100100475") },
+            { title: '包装类型', type: 'search', select: 3, element: document.getElementById("166List_0_list_0_1100100463") },
+            { title: '包装材质重量', type: 'text', select: 11, element: document.getElementById("166List_0_list_0_1100100464") },
+            { title: '一键填充其他规格', type: 'span', select: 1, element: document.querySelector(".rocket-table-tbody .rocket-table-row td:nth-child(3) button") },
             { title: '维护检测结果记录的个人联系方式-姓名', type: 'text', select: 'Pputianshichengxiangqurelangzhiyichang', element: document.getElementById("122_1100100277") },
-            { title: '生产日期', type: 'text', select: '2024/09/23', element: document.getElementById("121_1100100315") },
-            // { title: '维护检测结果记录的个人联系方式-姓名', type: 'text', select: 'GaoWei', element: document.getElementById("121_1100100265") },
             { title: '制造商', type: 'search', select: 2, element: document.getElementById("33_1000100091") },
             { title: '制造日期/保质期', type: 'search', select: 2, element: document.getElementById("34_1000100092") },
             { title: '品质保证标准', type: 'search', select: 2, element: document.getElementById("35_1000100087") },
@@ -192,7 +194,7 @@
             { title: '型号', type: 'search', select: 2, element: document.getElementById("49_1000100120") },
             { title: '补充认证信息', type: 'search', select: 3, element: document.getElementById("50_1000100090") },
             { title: '警告或安全信息（补充）', type: 'search', select: 2, element: document.getElementById("42_1000100110") },
-            { title: '认证信息', type: 'search', select: 1, element: document.getElementById("50_1000100123") },
+            { title: '认证信息', type: 'search', select: 0, element: document.getElementById("50_1000100123") },
             { title: '删除识别码', type: 'span', select: 0, element: document.querySelector(".rocket-input-suffix > i") },
             { title: '商品识别码', type: 'text', select: localStorage.getItem('Identification_code'), element: document.getElementById("611100100115List_0_name") },
         ];
