@@ -1,6 +1,36 @@
 // 从localStorage获取数据
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.main');
+    
+    // 添加店铺搜索功能
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'shop-search-container';
+    
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.id = 'shop-search';
+    searchInput.placeholder = '搜索店铺(回车确认)';
+    searchInput.className = 'search-input';
+    container.appendChild(searchContainer);
+    searchContainer.appendChild(searchInput);
+
+    // 初始隐藏搜索框
+    searchContainer.style.display = 'none';
+    
+    // 优化搜索逻辑：小写+去除空格后匹配
+    searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            const searchTerm = searchInput.value.toLowerCase().replace(/\s+/g, '');
+            const shopItems = document.querySelectorAll('.shop-item');
+            
+            shopItems.forEach(item => {
+                const btn = item.querySelector('.shop-btn');
+                const shopName = btn.textContent.toLowerCase().replace(/\s+/g, '');
+                const isMatch = shopName.includes(searchTerm);
+                item.style.display = isMatch ? 'block' : 'none';
+            });
+        }
+    });
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'loading';
     loadingDiv.textContent = '加载中...';
@@ -105,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             apiItems.forEach(item => item.classList.remove('hidden'));
             localStorageItems.forEach(item => item.classList.add('hidden'));
+            
+            // 显示搜索框
+            document.querySelector('.shop-search-container').style.display = 'block';
         } else {
             // 显示错误信息
             passwordError.classList.remove('hidden');
@@ -143,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.remove('active');
             }
         });
+        
+        // 隐藏搜索框
+        document.querySelector('.shop-search-container').style.display = 'none';
     });
     
     // 关闭按钮点击处理
@@ -157,6 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.remove('active');
             }
         });
+        
+        // 隐藏搜索框
+        document.querySelector('.shop-search-container').style.display = 'none';
     });
     
     // 切换按钮点击处理
@@ -183,6 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 apiItems.forEach(item => item.classList.add('hidden'));
                 localStorageItems.forEach(item => item.classList.remove('hidden'));
+                
+                // 隐藏搜索框
+                document.querySelector('.shop-search-container').style.display = 'none';
             }
         }
     });

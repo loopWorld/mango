@@ -235,6 +235,99 @@
         }
         
         /* 店铺列表样式 */
+        /* 搜索框样式 */
+        .search-container {
+            position: relative;
+            margin: 10px 0;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 8px 30px 8px 10px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        
+        .clear-search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            margin: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .clear-search-btn:hover {
+            background-color: #f1f3f4;
+        }
+        
+        /* 隐藏按钮样式 */
+        .shop-btn-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .hide-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 5px;
+            z-index: 10;
+        }
+        
+        .hide-btn:hover {
+            color: #f44336;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 显示/隐藏所有按钮样式 */
+        .toggle-hidden-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .toggle-hidden-btn:hover {
+            background: #e0e0e0;
+        }
+        
         .shop-list {
             margin-top: 10px;
             max-height: 300px; /* 设置最大高度 */
@@ -261,7 +354,11 @@
         <h1>店铺切换工具</h1>
     </div>
     
-    <div class="main"></div>
+    <div class="main">
+        <div class="api-buttons" style="display:none">
+          <!-- API按钮将通过popup.js动态添加 -->
+        </div>
+    </div>
     
     <div class="footer">
         © Mongo店铺管理

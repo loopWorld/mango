@@ -202,7 +202,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   // 处理添加店铺请求
   if (request.type === 'addShop') {
     console.log('收到添加店铺请求');
-    
+
     try {
       // 获取当前活动标签页
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -216,67 +216,87 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     } catch (error) {
       console.error('重定向页面失败:', error);
     }
-    
+
     return false; // 不需要保持消息通道开放
   }
-  
+
   // 处理切换店铺请求
   if (request.type === 'switchShop') {
     console.log('收到切换店铺请求:', request.shop);
-    
+
     // 检查shop对象是否存在
     if (!request.shop) {
       console.error('切换店铺失败: shop对象不存在');
       return false;
     }
-    
     // 获取SUB_PASS_ID
     const subPassId = request.shop.SUB_PASS_ID;
-    
-    if (subPassId) {
-      // 设置Cookie
-      chrome.cookies.set({
-        url: "https://seller.kuajingmaihuo.com",
-        name: "SUB_PASS_ID",
-        value: String(subPassId),
-        path: "/",
-        secure: true,
-        sameSite: "lax"
-      }, async (cookie) => {
-        if (chrome.runtime.lastError) {
-          console.error('设置Cookie失败:', chrome.runtime.lastError);
-        } else {
-          console.log('成功设置Cookie:', cookie);
-          
-          try {
-            // 获取当前活动标签页
-            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (tab?.id) {
-              // 检查URL是否包含login
-              if (tab.url.includes('login')) {
-                // 如果包含login，则重定向到首页
-                await chrome.tabs.update(tab.id, { url: 'https://seller.kuajingmaihuo.com/' });
-                console.log('检测到login页面，已重定向到首页');
-              } else {
-                // 否则正常刷新页面
-                await chrome.tabs.reload(tab.id);
-                console.log('页面已刷新');
-              }
-            } else {
-              console.error('未找到活动标签页');
-            }
-          } catch (error) {
-            console.error('刷新/重定向页面失败:', error);
+    if (!subPassId) {
+      console.error('切换店铺失败: SUB_PASS_ID为空', request.shop);
+      return false;
+    }
+
+    // 验证店铺数据
+    if (!request.shop.mallId) {
+      console.warn('店铺缺少mallID:', request.shop);
+    }
+
+    // 设置Cookie
+    chrome.cookies.set({
+      url: "https://seller.kuajingmaihuo.com",
+      name: "SUB_PASS_ID",
+      value: String(subPassId),
+      path: "/",
+      secure: true,
+      httpOnly: true,
+      sameSite: "lax",
+      expirationDate: Math.floor(Date.now() / 1000) + 86400 // 24小时后过期
+    }, async (cookie) => {
+      if (chrome.runtime.lastError) {
+        console.error('设置Cookie失败:', chrome.runtime.lastError);
+      } else {
+        console.log('成功设置Cookie:', request.shop);
+        // 获取当前活动标签页
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab?.id) {
+          if (request.shop.source == 'api') {
+            await chrome.scripting.executeScript({
+              target: { tabId: tab.id },
+              func: (mallId) => {
+                localStorage.setItem('EXPORT_MATERIAL_MALL_ID', mallId);
+                localStorage.setItem('mall-info-id', mallId);
+                console.log('API店铺localStorage设置完成', {
+                  EXPORT_MATERIAL_MALL_ID: mallId,
+                  'mall-info-id': mallId
+                });
+              },
+              args: [request.shop.mallId]
+            });
+            console.log('成功注入localStorage设置脚本');
+          }
+
+          // 解析当前页面URL
+          const url = new URL(tab.url);
+
+          // 确保页面URL是卖家后台域名
+          if (url.hostname !== 'seller.kuajingmaihuo.com') {
+            // 如果不在卖家后台，先导航到首页
+            await chrome.tabs.update(tab.id, { url: 'https://seller.kuajingmaihuo.com/' });
+            console.log('导航到卖家后台首页');
+          } else if (url.pathname === '/login' || url.pathname === '/login/') {
+            // 只有在确切的登录页面才重定向到首页
+            await chrome.tabs.update(tab.id, { url: 'https://seller.kuajingmaihuo.com/' });
+            console.log('检测到登录页面，已重定向到首页');
+          } else {
+            // 其他情况正常刷新页面
+            await chrome.tabs.reload(tab.id);
+            console.log('店铺切换成功，页面已刷新');
           }
         }
-      });
-    } else {
-      console.error('店铺数据中没有SUB_PASS_ID');
-    }
-    
-    return false; // 不需要保持消息通道开放
+      }
+    });
   }
-  
+
   if (request.action === 'setCookie') {
     // 设置Cookie
     chrome.cookies.set({
@@ -286,12 +306,68 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       path: "/",
       httpOnly: true,
       secure: true,
-      expirationDate: Math.floor(Date.now() / 1000) + 3600
-    }, (cookie) => {
+      expirationDate: Math.floor(Date.now() / 1000) + 86400 // 24小时后过期
+    }, async (cookie) => {
       if (chrome.runtime.lastError) {
-        sendResponse({success: false, error: chrome.runtime.lastError});
+        sendResponse({ success: false, error: chrome.runtime.lastError });
       } else {
-        sendResponse({success: true, cookie: cookie});
+        // 如果是API来源，设置页面的localStorage
+        if (request.source === 'api') {
+          try {
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tab?.id) {
+              // 验证目标页面URL
+              if (!tab.url.includes('seller.kuajingmaihuo.com')) {
+                console.warn('目标页面不是卖家后台:', tab.url);
+                sendResponse({ success: true, cookie: cookie });
+                return;
+              }
+
+              try {
+                // 确保mallID是可序列化的基本类型
+                const mallId = typeof request.mallID === 'string' || typeof request.mallID === 'number'
+                    ? String(request.mallID)
+                    : '';
+
+                if (!mallId) {
+                    console.error('无效的mallID:', request.mallID);
+                    sendResponse({ success: true, cookie: cookie });
+                    return;
+                }
+
+                try {
+                    await chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        func: (id) => {
+                            try {
+                                localStorage.setItem('EXPORT_MATERIAL_MALL_ID', id);
+                                localStorage.setItem('mall-info-id', id);
+                                console.log('API店铺localStorage设置完成', {
+                                    EXPORT_MATERIAL_MALL_ID: id,
+                                    'mall-info-id': id
+                                });
+                            } catch (e) {
+                                console.error('localStorage设置失败:', e);
+                            }
+                        },
+                        args: [mallId]
+                    });
+                } catch (error) {
+                    console.error('脚本执行失败:', error);
+                }
+                console.log('成功注入localStorage设置脚本', { tabId: tab.id });
+              } catch (error) {
+                console.error('脚本注入失败:', error, {
+                  tabId: tab.id,
+                  url: tab.url
+                });
+              }
+            }
+          } catch (error) {
+            console.error('注入localStorage设置脚本失败:', error);
+          }
+        }
+        sendResponse({ success: true, cookie: cookie });
       }
     });
     return true; // 保持消息通道开放
@@ -299,23 +375,23 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
   if (request.action === 'getLoginInfo') {
     // 从页面localStorage获取登录信息
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {
         chrome.scripting.executeScript({
-          target: {tabId: tabs[0].id},
+          target: { tabId: tabs[0].id },
           func: () => {
             const data = localStorage.getItem('temulogininfo');
             return data ? JSON.parse(data) : null;
           }
         }, (results) => {
           if (chrome.runtime.lastError) {
-            sendResponse({error: chrome.runtime.lastError.message});
+            sendResponse({ error: chrome.runtime.lastError.message });
             return;
           }
-          sendResponse({data: results[0]?.result});
+          sendResponse({ data: results[0]?.result });
         });
       } else {
-        sendResponse({error: 'No active tab found'});
+        sendResponse({ error: 'No active tab found' });
       }
     });
     return true; // 保持消息通道开放
